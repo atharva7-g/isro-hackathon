@@ -1,0 +1,13 @@
+[project]
+name = "preprocessing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gdal==3.10.3",
+    "ipykernel>=6.29.5",
+    "matplotlib>=3.10.3",
+    "pillow>=11.2.1",
+    "rasterio>=1.4.3",
+]

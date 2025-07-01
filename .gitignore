@@ -1,0 +1,8 @@
+.venv/
+archive/
+*.tif
+images/
+resized/
+stacked/
+*.tif.aux.xml
+*.vrt
