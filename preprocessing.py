@@ -1,7 +1,6 @@
 import numpy as np
 import re
 from collections import defaultdict
-from osgeo import gdal
 import rasterio
 from pathlib import Path
 import os
@@ -55,10 +54,9 @@ class Preprocessing:
 
     def resize(self, output_folder='resized/', scale_factor=0.25):
         input_folder = self.output_dir
-        output_folder = "resized/"
         scale_factor = 0.25
 
-        for file in glob.glob(os.path.join(input_folder, "*.tif")):
+        for file in glob(os.path.join(input_folder, "*.tif")):
             with rasterio.open(file) as src:
                 width = int(src.width * scale_factor)
                 height = int(src.height * scale_factor)
@@ -85,36 +83,28 @@ class Preprocessing:
                         )
                         dst.write(src_data, i)
     
-    def load_stacked_rasters(self, directory='resized/', pattern='_stack.tif'):
+    def get_stacked_raster_filenames(self, directory='resized/', pattern='_stack.tif'):
         directory = Path(directory)
-
+    
         files = sorted([f for f in directory.iterdir() 
-                       if f.is_file() and f.name.endswith(pattern)])
-
+                        if f.is_file() and f.name.endswith(pattern)])
+    
         if not files:
             print(f"No files found matching pattern '{pattern}' in {directory}")
             return []
-
-        stacked_arrays = []
-
-        for file_path in files:
-            try:
-                with rasterio.open(file_path) as src:
-                    # Read all bands
-                    arr = src.read()
-                    stacked_arrays.append(arr)
-                    print(f"Loaded: {file_path.name} - Shape: {arr.shape}")
-
-            except Exception as e:
-                print(f"Error loading {file_path}: {e}")
-                continue
-            
-        print(f"Successfully loaded {len(stacked_arrays)} raster files")
-        return stacked_arrays
+    
+        print(f"Found {len(files)} raster files")
+        for f in files:
+            print(f"File: {f.name}")
+    
+        return files
 
     def sequentiate(self, stacked_arrays):        
         T = stacked_arrays.shape[0]
         N = T - self.input_len - self.pred_len + 1
+        if N <= 0:
+            raise ValueError("Not enough time steps for the given input_len and pred_len")
+        
         X = []
         y = []
         for i in range(N):

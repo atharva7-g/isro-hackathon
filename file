@@ -1,0 +1,17 @@
+from pathlib import Path
+
+def get_stacked_raster_filenames(self, directory='resized/', pattern='_stack.tif'):
+    directory = Path(directory)
+
+    files = sorted([f for f in directory.iterdir() 
+                    if f.is_file() and f.name.endswith(pattern)])
+
+    if not files:
+        print(f"No files found matching pattern '{pattern}' in {directory}")
+        return []
+
+    print(f"Found {len(files)} raster files")
+    for f in files:
+        print(f"File: {f.name}")
+
+    return files
